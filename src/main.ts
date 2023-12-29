@@ -1,5 +1,6 @@
 import {
 	App,
+	Command,
 	MarkdownView,
 	Notice,
 	Plugin,
@@ -55,6 +56,21 @@ const registerScopes = (scope: Scope, plugin: VimReadingViewNavigation) => {
 				self.keyArray.push(evt.key);
 				return false;
 			}
+		}
+		return true;
+	});
+
+	scope.register(['Ctrl'], 'i', (evt: KeyboardEvent) => {
+		const leaf = app.workspace.getActiveViewOfType(MarkdownView);
+		if (leaf.getMode() === 'preview') {
+			self.goForward();
+		}
+		return true;
+	});
+	scope.register(['Ctrl'], 'o', (evt: KeyboardEvent) => {
+		const leaf = app.workspace.getActiveViewOfType(MarkdownView);
+		if (leaf.getMode() === 'preview') {
+			self.goBack();
 		}
 		return true;
 	});
@@ -210,6 +226,22 @@ export default class VimReadingViewNavigation extends Plugin {
 
 	getScroll(leaf: MarkdownView): number {
 		return leaf.previewMode.getScroll();
+	}
+
+	goBack() {
+		/* eslint-disable */
+		(
+			(this.app.commands as any).commands['app:go-back'] as Command
+		).checkCallback(false);
+		/* eslint-enable */
+	}
+
+	goForward() {
+		/* eslint-disable */
+		(
+			(this.app.commands as any).commands['app:go-forward'] as Command
+		).checkCallback(false);
+		/* eslint-enable */
 	}
 
 	scrollDown(leaf: MarkdownView) {
